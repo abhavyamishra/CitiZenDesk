@@ -35,12 +35,7 @@ const userSchema = new mongoose.Schema(
       type: String, 
       default: "",
     },
-    complaints: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Complaint", 
-      },
-    ],
+  
     accessToken: {
       token: { type: String },
     },
