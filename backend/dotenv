@@ -1,0 +1,4 @@
+PORT=8000
+MONGO_URL=mongodb+srv://abhavyamishra:abhavya123@cluster0.hjjiea9.mongodb.net
+FRONTEND_URL=http://localhost:5173  
+JWT_SECRET=AbH#7kL!2pZ9xR@1yT
