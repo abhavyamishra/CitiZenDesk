@@ -1,6 +1,6 @@
-import Staff from "../models/Staff.js";
-import Manager from "../models/Manager.js";
-import Auth from "../models/Auth.js";
+import Staff from "../models/staff.model.js";
+import Manager from "../models/manager.model.js";
+import Auth from "../models/auth.model.js";
 
 // CREATE STAFF (admin only)
 export const createStaff = async (req, res) => {

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Complaint from "./Complaint.js";
+import Complaint from "./complaints.model.js";
 
 const userSchema = new mongoose.Schema(
   {

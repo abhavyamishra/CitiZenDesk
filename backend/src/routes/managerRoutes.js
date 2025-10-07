@@ -1,5 +1,5 @@
 import express from "express";
-import { authManager } from "../middleware/auth.js";
+import { authManager } from "../middleware/authMiddleware.js";
 import {
   managerLogin,
   getManagerDashboard,

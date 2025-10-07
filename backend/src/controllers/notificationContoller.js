@@ -1,8 +1,8 @@
-import Notification from "../models/Notification.js";
-import User from "../models/User.js";
-import Staff from "../models/Staff.js";
-import Manager from "../models/Manager.js";
-import Admin from "../models/Admin.js";
+import Notification from "../models/notification.model.js";
+import User from "../models/user.model.js";
+import Staff from "../models/staff.model.js";
+import Manager from "../models/manager.model.js";
+import Admin from "../models/admin.model.js";
 
 // ---------------------------
 // GET ALL NOTIFICATIONS FOR LOGGED-IN USER

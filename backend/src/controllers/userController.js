@@ -1,6 +1,6 @@
-import User from "../models/User.js";
-import Complaint from "../models/Complaint.js";
-import Notification from "../models/Notification.js";
+import User from "../models/user.model.js";
+import Complaint from "../models/complaints.model.js";
+import Notification from "../models/notification.model.js";
 
 // ---------------------------
 // USER REGISTRATION

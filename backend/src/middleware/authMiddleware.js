@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
-import Staff from "../models/Staff.js";
-import Manager from "../models/Manager.js";
-import Admin from "../models/Admin.js";
+import User from "../models/user.model.js";
+import Staff from "../models/staff.model.js";
+import Manager from "../models/manager.model.js";
+import Admin from "../models/admin.model.js";
 
 // Verify token for general users (User/Staff/Manager/Admin)
 export const protect = async (req, res, next) => {
@@ -75,7 +75,7 @@ export const protectStaff = async (req, res, next) => {
 };
 
 // Protect Manager only
-export const protectManager = async (req, res, next) => {
+export const authManager = async (req, res, next) => {
   await protect(req, res, () => {
     if (req.user.role !== "manager") {
       return res.status(403).json({ message: "Not a manager" });

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Staff from "./Staff.js";
-import Complaint from "./Complaint.js";
+import Staff from "./staff.model.js";
+import Complaint from "./complaints.model.js";
 
 const managerSchema = new mongoose.Schema(
   {

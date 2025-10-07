@@ -1,7 +1,7 @@
-import Staff from "../models/Staff.js";
-import Complaint from "../models/Complaint.js";
-import Notification from "../models/Notification.js";
-import Manager from "../models/Manager.js";
+import Staff from "../models/staff.model.js";
+import Complaint from "../models/complaints.model.js";
+import Notification from "../models/notification.model.js";
+import Manager from "../models/manager.model.js";
 
 // ---------------------------
 // GET STAFF DASHBOARD

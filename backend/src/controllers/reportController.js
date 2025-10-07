@@ -1,4 +1,4 @@
-import Complaint from "../models/Complaint.js";
+import Complaint from "../models/complaints.model.js";
 import { Parser } from "json2csv";
 import fs from "fs";
 import path from "path";

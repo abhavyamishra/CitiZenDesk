@@ -1,6 +1,6 @@
-import Complaint from "../models/Complaint.js";
-import Staff from "../models/Staff.js";
-import Notification from "../models/Notification.js";
+import Complaint from "../models/complaints.model.js";
+import Staff from "../models/staff.model.js";
+import Notification from "../models/notification.model.js";
 
 // ---------------------------
 // CREATE COMPLAINT (User only)

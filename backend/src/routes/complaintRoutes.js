@@ -5,7 +5,7 @@ import {
   updateComplaintUrgency,
   getComplaints,
   getComplaint,
-} from "../controllers/ComplaintController.js";
+} from "../controllers/complaintContoller.js";
 import { protect, authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();

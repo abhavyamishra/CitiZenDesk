@@ -1,8 +1,8 @@
-import Auth from "../models/Auth.js";
-import User from "../models/User.js";
-import Staff from "../models/Staff.js";
-import Manager from "../models/Manager.js";
-import Admin from "../models/Admin.js";
+import Auth from "../models/auth.model.js";
+import User from "../models/user.model.js";
+import Staff from "../models/staff.model.js";
+import Manager from "../models/manager.model.js";
+import Admin from "../models/admin.model.js";
 import jwt from "jsonwebtoken";
 
 // USER REGISTRATION ONLY
