@@ -43,6 +43,14 @@ const initialState = {
     items: [],
     status: 'idle', // idle, loading, succeeded,  failed
     error: null,
+    filters: {
+        type: [], // For department
+        locality: [],
+        status: [],
+        sortBy: 'newer', // 'newer', 'older', 'timeLeft_asc', 'completion_time'
+        startDate: null,
+        endDate: null 
+    }
 };
 
 export const complaintSlice = createSlice({
@@ -56,6 +64,21 @@ export const complaintSlice = createSlice({
         complaintDeleted: (state, action) => {
             state.items = state.items.filter(complaint => complaint.id !== action.payload);
         },
+         setFilter: (state, action) => {
+            const { filterName, value } = action.payload;
+
+            if (Array.isArray(state.filters[filterName])) {
+                const currentArray = state.filters[filterName];
+                if (currentArray.includes(value)) {
+                    state.filters[filterName] = currentArray.filter(item => item !== value);
+                } else {
+                    currentArray.push(value);
+                }
+            } else {
+                state.filters[filterName] = value;
+            }
+        },
+       
     },
     extraReducers: (builder) => {
         builder
@@ -79,5 +102,6 @@ export const complaintSlice = createSlice({
             });
     },
 });
+export const { setFilter } = complaintSlice.actions;
 export const { complaintAdded, complaintDeleted } = complaintSlice.actions;
 export default complaintSlice.reducer;
