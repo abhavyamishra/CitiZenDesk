@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 // const complaints = [
 //   {
@@ -16,6 +17,8 @@ import { useEffect, useState } from "react";
 //     due: new Date("2025-10-03T12:00:00"),
 //   },
 // ];
+
+const complaints = useSelector((state) => state.complaints.items);
 
 function ComplaintBar({ complaint }) {
   const [timeLeft, setTimeLeft] = useState("");
@@ -66,18 +69,7 @@ function ComplaintBar({ complaint }) {
 }
 
 export default function ComplaintList() {
-  const [complaints, setComplaints] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/api/complaints`)
-      .then((res) => {
-        setComplaints(res.data); 
-      })
-      .catch((err) => {
-        console.error("Error fetching complaints:", err);
-      });
-  }, []);
 
   return (
     <div>

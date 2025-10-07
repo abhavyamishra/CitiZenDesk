@@ -6,8 +6,7 @@ import axios from "axios"
 
 export default function ComplaintDetails() {
   const { id } = useParams()
-  const [complaint, setComplaint] = useState(null)
-  const [loading, setLoading] = useState(true)
+
 
 // const complaint = {
 //   "_id": "1",
@@ -36,27 +35,9 @@ export default function ComplaintDetails() {
     return `${days}d ${hours}h remaining`
   }
 
-  useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/api/complaints/${id}`)
-      .then((response) => {
-        setComplaint(response.data); 
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching complaint:", err);
-        setLoading(false);
-      });
-  }, [id]);
-
-  if (loading) {
-    return <p className="text-center mt-5">Loading complaint...</p>
-  }
-
-  if (!complaint) {
-    return <p className="text-center mt-5 text-red-500">Complaint not found</p>
-  }
+  const complaint = useSelector((state) => 
+    state.complaints.items.find((c) => c._id === id)
+  );
 
   const [selected, setSelected] = useState(null)
   const [scale, setScale] = useState(1)
