@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import axios from "axios"
+import { useSelector } from "react-redux"
+import { formatTimeLeft } from "@/utility/dateUtils"
 
 
 export default function ComplaintDetails() {
@@ -12,11 +13,13 @@ export default function ComplaintDetails() {
 //   "_id": "1",
 //   "title": "Garbage not collected",
 //   "description": "Garbage not collected in my street for 3 days lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-//   "status": "Being Processed",
-//   "dept": "Sanitation",
-//   "due": "2025-10-10T18:00:00Z",
+//   "status": "being_processed",
+//   "deptName": "Sanitation",
+//   "startTime": "2025-10-18T18:00:00Z",
+//  "durationHours": 2,
 //   "author": "Abhavya Mishra",
 //   "locality": "Sector 21, Noida",
+//   "urgency": "Critical",
 //   "media": [
 //   "/garbage.jpg",
 //   "/garbage2.png",
@@ -60,24 +63,80 @@ export default function ComplaintDetails() {
         <CardContent className="space-y-4">
           <p className="text-gray-700">{complaint.description}</p>
 
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="font-medium">Status: </span>
-              <span className="text-blue-600">{complaint.status}</span>
-            </div>
-            <div>
-              <span className="font-medium">Department: </span>
-              {complaint.dept}
-            </div>
-            <div>
-              <span className="font-medium">Locality: </span>
-              {complaint.locality}
-            </div>
-            <div>
-              <span className="font-medium">Due: </span>
-              {calculateTimeRemaining(complaint.due)}
-            </div>
-          </div>
+ <div className="grid grid-cols-2 gap-4 text-sm">
+  {/* Status */}
+  <div>
+    <span className="font-medium">Status: </span>
+    <span
+      className={`
+        ${
+          complaint.status === 'active' ? 'text-green-600' :
+          complaint.status === 'being_processed' ? 'text-blue-600' :
+          complaint.status === 'completed' ? 'text-pink-600' :
+          complaint.status === 'completed_late' ? 'text-yellow-500' :
+          complaint.status === 'elapsed' ? 'text-red-600' :
+          complaint.status === 'closed' ? 'text-red-900' :
+          'text-gray-700'
+        }
+        font-semibold
+      `}
+    >
+      {complaint.status}
+    </span>
+  </div>
+
+  {/* Department */}
+  <div>
+    <span className="font-medium">Department: </span>
+    {complaint.deptName}
+  </div>
+
+  {/* Locality */}
+  <div>
+    <span className="font-medium">Locality: </span>
+    {complaint.locality}
+  </div>
+
+  {/* Date */}
+  <div>
+    <span className="font-medium">Date: </span>
+    {new Date(complaint.startTime).toLocaleDateString()}
+  </div>
+
+  {/* Due */}
+  <div>
+    <span className="font-medium">Due: </span>
+    {(() => {
+  const dueText = formatTimeLeft(complaint.startTime, complaint.durationHours);
+  return (
+    <span className={dueText === 'Overdue' ? 'text-red-600 font-semibold' : ''}>
+      {dueText}
+    </span>
+  );
+})()}
+  </div>
+
+  {/* Urgency */}
+  <div>
+    <span className="font-medium">Urgency: </span>
+    <span
+      className={`
+        ${
+          complaint.urgency === 'Critical' ? 'text-red-700 font-bold' :
+          complaint.urgency === 'High' ? 'text-red-500 font-normal' :
+          complaint.urgency === 'Average' ? 'text-yellow-500 font-normal' :
+          complaint.urgency === 'Low' ? 'text-green-600 font-normal' :
+          'text-gray-700'
+        }
+      `}
+    >
+      {complaint.urgency}
+    </span>
+  </div>
+</div>
+
+
+          
 
           {/* Media Preview */}
           {complaint.media && complaint.media.length > 0 && (

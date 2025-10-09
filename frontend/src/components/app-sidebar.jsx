@@ -26,24 +26,37 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
+import { useSelector } from "react-redux"
+import { Nav } from "react-day-picker"
 
-let isUserSignedIn = true;
+const authState = useSelector(state => state.auth);
+
+let isUserSignedIn = authState.isAuthenticated && authState.role === "user";
 
 const data = {
   user: {
-    name: "Abhavya Mishra",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: state.auth.id,
+    email: state.auth.email,
+    locality: state.auth.locality,
+    imageUrl: state.auth.avatar
   },
   teams: [
     {
       name: "CitiZenDesk",
-      logo: GalleryVerticalEnd,
+      logo: "group.png",
       plan: "Enterprise",
     },
   ],
-  navMain: [
-    {
+
+  municipalStaff: {
+    name: state.auth.id,
+    email: state.auth.email,  
+    department: state.auth.dept,
+    imageUrl: state.auth.avatar
+  },
+
+  navMain: {
+    common: {
       title: "Your Profile",
       url: "#",
       icon: SquareTerminal,
@@ -61,13 +74,12 @@ const data = {
           title: "Change Aavatar",
           url: "#",
         },
-        {
-          title: "Change Name",
-          url: "#",
-        },
+        
+        (state.auth.role === 'user'? [{ title: "Change Locality", url: "#" }]: []
+        )
       ],
     },
-    {
+    onlyUser:{
       title: "Complaints",
       url: "#",
       icon: Bot,
@@ -87,7 +99,7 @@ const data = {
       ],
     },
     
-  ],
+  },
 }
 
 
@@ -100,12 +112,14 @@ export function AppSidebar({
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        {isUserSignedIn ? <NavMain items={[data.navMain.common, data.navMain.onlyUser]} /> : <NavMain items={[data.navMain.common]} />}
+
        {isUserSignedIn ? <NavProjects /> : null}
 
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {isUserSignedIn ? <NavUser user={data.user} /> : <NavUser user={data.municipalStaff} />}
+      
       </SidebarFooter>
       {/* <SidebarRail /> */}
     </Sidebar>
