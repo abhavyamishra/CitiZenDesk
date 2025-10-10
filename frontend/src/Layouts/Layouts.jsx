@@ -1,13 +1,27 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "your-sidebar-library";
-import AppSidebar from "./AppSidebar";
+import { SidebarProvider } from "../components/ui/sidebar";
+
+import { SidebarInset } from "../components/ui/sidebar";
+import { SidebarTrigger } from "../components/ui/sidebar";
+
+import {AppSidebar} from "../components/app-sidebar";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import  StatsDashboardPage  from '../pages/StatsDashboardPage'
+import { useState } from "react";
+import { ChevronDown, Plus, ChevronUp } from 'lucide-react';
 
 
-const Layout = () => {
+
+export const Layouts = () => {
+
+   const { role, isAuthenticated } = useSelector((state) => state.auth);
+   const [isStatsVisible, setIsStatsVisible] = useState(false);
+
   return (
-    <SidebarProvider>
+       <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-12 shrink-0 items-center gap-2 bg-sidebar text-sidebar-foreground transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8">
@@ -24,23 +38,45 @@ const Layout = () => {
                 About Us
               </Link>
             </div>
+            
             <div>
               <Link
               to='/contact'
               className="text-blue-600 hover:underline hover:text-blue-800"
               >
                 Contact us
-              </Link>              
-            </div>
-          </div>
+              </Link>    
+              </div>     
+              <Button variant="ghost" size="sm" onClick={() => setIsStatsVisible(!isStatsVisible)}>
+                            Stats
+                            
+                            {isStatsVisible ? (
+                                <ChevronUp className="ml-2 h-4 w-4" />
+                            ) : (
+                                <ChevronDown className="ml-2 h-4 w-4" />
+                            )}
+              </Button>   
+            {role === 'user' && (
+  <div>
+    <Button asChild variant="default" size="sm">
+      <Link to="/complaint/new">
+        <Plus className="mr-2 h-4 w-4" /> Create Complaint
+      </Link>
+    </Button>
+  </div>
+)}
+</div>
         </header>
+      {isStatsVisible && (
+                        <StatsDashboardPage />
+                    )}
 
         <main className="flex items-center gap-2 px-4">
-          <Outlet />
+          <Outlet/>
         </main>
       </SidebarInset>
     </SidebarProvider>
   );
 };
 
-export default Layout;
+//export default Layouts;

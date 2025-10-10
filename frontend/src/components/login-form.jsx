@@ -9,6 +9,9 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Link } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { useState } from "react"
 
 export function LoginForm({
   className,
@@ -86,7 +89,7 @@ export function LoginForm({
                     </a>
                   </div>
                   <Input id="password" type="password" required 
-                  value={passowrd}
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)}/>
                 </div>
                 <Button type="submit" className="w-full text-black text-3xl" onChange={handleSubmit} disabled={loading}>
@@ -96,9 +99,10 @@ export function LoginForm({
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
-                  Sign up
-                </a>
+                <Link to="/signup" className="underline underline-offset-4">
+  Sign up
+</Link>
+
               </div>
             </div>
           </form>

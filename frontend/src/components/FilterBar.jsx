@@ -11,9 +11,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
-const localities = ["shivpuri", "civil lines", "bamrauli", "subedarganj", "phaphamau"];
+const localities = ["shivpuri", "civil lines", "bamrauli", "subedarganj", "phaphamau", "allahapur", "kareli", "katra"];
 const statuses = ["completed", "completed_late", "being_processed", "active", "elapsed", "closed"];
-const urgencies = ["critical", "high", "average", "low"];
+const urgencies = ["critical", "high", "medium", "low"];
 const departments = ["water", "road", "garbage"];
 
 export const FilterBar = () => {

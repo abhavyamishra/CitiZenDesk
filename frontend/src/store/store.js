@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import complaintsReducer from '../slices/complaintSlice';
 import authReducer from '../slices/authSlice';
 import staffReducer from '../slices/staffSlice';
+import statsReducer from '../slices/statsSlice'
 
 export const store = configureStore({
   // 2. Combine all reducers into a single root reducer object
@@ -11,5 +12,6 @@ export const store = configureStore({
     complaints: complaintsReducer,
     auth: authReducer,
     staff: staffReducer,
+     stats: statsReducer,
   },
 });

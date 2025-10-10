@@ -50,7 +50,7 @@ export function NavProjects({ isUserSignedIn=true }) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         )}
-        {(isUserSignedIn &&
+        {/* {(isUserSignedIn &&
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
             <div className="flex justify-between items-center w-full">
@@ -69,7 +69,7 @@ export function NavProjects({ isUserSignedIn=true }) {
             </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
-        )}
+        )} */}
 
          {/* <SidebarMenuItem>
           <SidebarMenuButton asChild>

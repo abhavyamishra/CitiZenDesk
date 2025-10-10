@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { ComplaintsDashboard } from './ComplaintsDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export const UserPage = () => {
+export const StaffPage = () => {
     const [activeTab, setActiveTab] = useState('all');
 
     const allComplaints = useSelector(state => state.complaints.items);

@@ -1,6 +1,6 @@
 import { LoginForm } from "@/components/login-form"; 
 
-export default function LoginPage() {
+export function LoginPage() {
   return (
     <div
       style={{

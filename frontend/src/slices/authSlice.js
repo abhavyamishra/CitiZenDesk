@@ -3,7 +3,7 @@ import { Phone } from "lucide-react";
 
 const authSlice = createSlice({
     name: "auth",
-    initialState: { role: "user", tokens: null, isAuthenticated: false, dept: null, email: null, Phone: null, id: null, locality: null, name: null, avatar: null},
+    initialState: { role: 'user', tokens: null, isAuthenticated: true, dept: null, email: null, Phone: null, id: 'user123', locality: null, name: null, avatar: null},
     reducers: {
         setAuth: (state, action) => {
             state.role = action.payload.role;

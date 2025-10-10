@@ -1,13 +1,14 @@
 import React from 'react';
 import { Routes, Route,Navigate } from 'react-router-dom';
-import  Layout  from '../layouts/Layout';
-import { ProtectedRoute } from './ProtectedRoute';
+import  {Layouts}  from '../layouts/Layouts';
+import { ProtectedRoute } from '../components/ProtectedRoute';
 import { DashboardLandingPage } from '../pages/DashboardLandingPage';
 import { ComplaintPage } from '../pages/ComplaintPage';
-import { LoginPage } from '../pages/LoginPage';import { LoginPage } from "../pages/LoginPage";
+import { LoginPage } from '../pages/LoginPage';
 import { AboutPage } from "../pages/AboutPage";
 import { ContactPage } from "../pages/ContactPage";
 import { SignupPage } from "../pages/SignupPage";
+import { ComplaintCreationForm } from '@/components/ComplaintCreationForm';
 
 export const AppRouter = () => {
     return (
@@ -18,11 +19,18 @@ export const AppRouter = () => {
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
+               {/* // <Route path="/complaint/new" element={<ComplaintCreationForm />} /> */}
            
             {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
-                <Route element={<Layout />}>
+                <Route element={<Layouts />}>
                     <Route path="/dashboard" element={<DashboardLandingPage />} />
+                     <Route element={<ProtectedRoute allowedRoles={['user']} />}>
+                     <Route path="/complaint/new" element={<ComplaintCreationForm />} />
+
+
+          </Route>
+                    
                     <Route path="/complaint/:id" element={<ComplaintPage />} />
                 </Route>
             </Route>

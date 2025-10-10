@@ -134,7 +134,7 @@ function Sidebar({
   collapsible = "offcanvas",
   className,
   children,
-  ...props
+  
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
@@ -146,7 +146,7 @@ function Sidebar({
           "bg-sidebar text-sidebar-foreground flex h-full w-(--sidebar-width) flex-col",
           className
         )}
-        {...props}>
+        >
         {children}
       </div>
     );
@@ -154,7 +154,7 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+      <Sheet open={openMobile} onOpenChange={setOpenMobile} >
         <SheetContent
           data-sidebar="sidebar"
           data-slot="sidebar"
@@ -208,7 +208,7 @@ function Sidebar({
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className
         )}
-        {...props}>
+        >
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"

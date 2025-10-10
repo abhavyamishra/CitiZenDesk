@@ -21,9 +21,24 @@ export const useProcessedComplaints = (inputComplaints) => {
 
         // filtering
         if (filters.department.length > 0) complaints = complaints.filter(c => filters.department.includes(c.deptName));
-        if (filters.locality.length > 0) complaints = complaints.filter(c => filters.locality.includes(c.locality));
-        if (filters.status.length > 0) complaints = complaints.filter(c => filters.status.includes(c.status));
-        if (filters.urgency.length > 0) complaints = complaints.filter(c => filters.urgency.includes(c.urgency));
+        if (filters.locality.length > 0) {
+  complaints = complaints.filter(c =>
+    filters.locality.some(loc =>
+      c.locality?.toLowerCase().includes(loc.toLowerCase())
+    )
+  );
+}
+        if (filters.status.length > 0) {
+  complaints = complaints.filter(c =>
+    filters.status.some(s => s.toLowerCase() === c.status?.toLowerCase())
+  );
+}
+        if (filters.urgency.length > 0) {
+  complaints = complaints.filter(c =>
+    filters.urgency.some(u => u.toLowerCase() === c.urgency?.toLowerCase())
+  );
+}
+
         if (filters.startDate && filters.endDate) {
             const start = new Date(filters.startDate).setHours(0, 0, 0, 0);
             const end = new Date(filters.endDate).setHours(23, 59, 59, 999);

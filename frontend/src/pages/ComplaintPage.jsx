@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 import { formatTimeLeft } from "@/utility/dateUtils"
 
 
-export default function ComplaintDetails() {
+export function ComplaintPage() {
   const { id } = useParams()
 
 

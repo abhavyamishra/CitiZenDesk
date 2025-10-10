@@ -9,7 +9,7 @@ import { StickyHeader } from '../components/StickyHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import { useEffect } from 'react';
 
 export const ComplaintsDashboard = ({ complaintsData }) => {
     const dispatch = useDispatch();
@@ -318,7 +318,11 @@ const allUrgencies = ["critical", "high", "medium", "low"];
           </div>
         </TableCell>
         <TableCell className="p-4 align-middle">{complaint.deptName}</TableCell>
-        <TableCell className="p-4 align-middle">{complaint.locality}</TableCell>
+        <TableCell className="p-4 align-middle">
+  <div className="max-w-[300px] truncate" title={complaint.locality}>
+    {complaint.locality}
+  </div>
+</TableCell>
          <TableCell>
             {person?.role === 'staff' ? (
                               <Select value={complaint.status} onValueChange={(newStatus) => handleStatusChange(complaint.complaintId, newStatus)}>
@@ -342,7 +346,7 @@ const allUrgencies = ["critical", "high", "medium", "low"];
 
         
         <TableCell className="p-4 align-middle">
-          {new Date(complaint.date).toLocaleDateString()}
+          {new Date(complaint.startTime).toLocaleDateString()}
         </TableCell>
         <TableCell className="p-4 align-middle">
           {(() => {
