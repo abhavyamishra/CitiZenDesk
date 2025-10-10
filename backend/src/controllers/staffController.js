@@ -39,12 +39,26 @@ export const updateComplaintStatus = async (req, res) => {
     const staff = req.staff;
     if (!staff) return res.status(404).json({ message: "Staff not found" });
 
+    const io = req.app.get("io"); // ✅ Access socket instance
+
     const { complaintId, newStatus } = req.body;
     const complaint = await Complaint.findById(complaintId);
     if (!complaint) return res.status(404).json({ message: "Complaint not found" });
 
     // Update status using Staff model method
     const updatedComplaint = await staff.updateComplaintStatus(complaint, newStatus);
+
+    // ✅ Calculate resolution time if status is RESOLVED or COMPLETED_LATE
+    if (["RESOLVED", "COMPLETED_LATE"].includes(updatedComplaint.status)) {
+      const endTime = new Date();
+      updatedComplaint.endTime = endTime;
+      const resolutionTimeMs = endTime - updatedComplaint.startTime;
+      updatedComplaint.resolutionTimeHours = resolutionTimeMs / (1000 * 60 * 60); // convert ms to hours
+      await updatedComplaint.save();
+
+      // ✅ Emit socket event for frontend charts
+      io?.emit("complaint_resolved", updatedComplaint);
+    }
 
     // Notify manager of department
     const manager = await Manager.findOne({ deptName: staff.deptName });
@@ -57,6 +71,9 @@ export const updateComplaintStatus = async (req, res) => {
         meta: { complaintId: complaint._id, staffId: staff._id },
       });
     }
+
+    // ✅ Emit general complaint update to frontend
+    io?.emit("complaint_updated", updatedComplaint);
 
     res.json({ message: "Complaint status updated", complaint: updatedComplaint });
   } catch (error) {
@@ -100,3 +117,4 @@ export const markNotificationRead = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
