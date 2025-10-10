@@ -1,6 +1,38 @@
 import Complaint from "../models/complaints.model.js";
 import Staff from "../models/staff.model.js";
 import Notification from "../models/notification.model.js";
+import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Utility: Fetch coordinates from Google Geocoding API
+const geocodeAddress = async (address) => {
+  try {
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const encodedAddress = encodeURIComponent(address);
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${apiKey}`;
+
+    const response = await axios.get(url);
+
+    if (response.data.status !== "OK") {
+      console.error("Geocoding error:", response.data.status);
+      return { latitude: null, longitude: null, formattedAddress: address };
+    }
+
+    const location = response.data.results[0].geometry.location;
+    const formattedAddress = response.data.results[0].formatted_address;
+
+    return {
+      latitude: location.lat,
+      longitude: location.lng,
+      formattedAddress,
+    };
+  } catch (error) {
+    console.error("❌ Error fetching geocode:", error.message);
+    return { latitude: null, longitude: null, formattedAddress: address };
+  }
+};
 
 // ---------------------------
 // CREATE COMPLAINT (User only)
@@ -25,14 +57,22 @@ export const createComplaint = async (req, res) => {
       });
     }
 
+    // 🔍 Get coordinates using Google Geocoding API
+    const geoData = await geocodeAddress(locality);
+
+    // Create complaint with geolocation
     const complaint = await Complaint.create({
       title,
       description,
-      locality,
+      locality: geoData.formattedAddress || locality,
       deptName,
       media,
       author: authorId,
       status: "OPEN",
+      location: {
+        type: "Point",
+        coordinates: [geoData.longitude, geoData.latitude], // [lng, lat]
+      },
     });
 
     // Notify staff of the department
@@ -47,7 +87,14 @@ export const createComplaint = async (req, res) => {
       });
     }
 
-    res.status(201).json({ message: "Complaint created", complaint });
+    res.status(201).json({
+      message: "Complaint created successfully",
+      complaint,
+      location: {
+        latitude: geoData.latitude,
+        longitude: geoData.longitude,
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -56,7 +103,6 @@ export const createComplaint = async (req, res) => {
 
 // ---------------------------
 // UPDATE COMPLAINT STATUS
-// Staff/Manager updates statuses
 // ---------------------------
 export const updateComplaintStatus = async (req, res) => {
   try {
@@ -66,15 +112,24 @@ export const updateComplaintStatus = async (req, res) => {
     const complaint = await Complaint.findById(complaintId);
     if (!complaint) return res.status(404).json({ message: "Complaint not found" });
 
-    const validStatuses = ["OPEN", "IN PROGRESS", "RESOLVED", "COMPLETED_LATE", "CLOSED", "ELAPSED"];
+    const validStatuses = [
+      "OPEN",
+      "IN PROGRESS",
+      "RESOLVED",
+      "COMPLETED_LATE",
+      "CLOSED",
+      "ELAPSED",
+    ];
     if (!validStatuses.includes(newStatus)) {
       return res.status(400).json({ message: "Invalid status" });
     }
 
     const now = new Date();
-    const endTime = new Date(complaint.startTime.getTime() + complaint.durationHours * 60 * 60 * 1000);
+    const endTime = new Date(
+      complaint.startTime.getTime() + complaint.durationHours * 60 * 60 * 1000
+    );
 
-    // SLA breach handling
+    // SLA breach
     if (now > endTime && !["RESOLVED", "COMPLETED_LATE"].includes(complaint.status)) {
       complaint.status = "ELAPSED";
       complaint.escalated = true;
@@ -82,24 +137,22 @@ export const updateComplaintStatus = async (req, res) => {
 
       await Notification.create({
         recipientModel: "Manager",
-        recipient: null, // optionally link to department manager
+        recipient: null,
         type: "sla_breach",
         message: `Complaint ${complaint.complaintId} SLA breached.`,
         meta: { complaintId: complaint._id },
       });
 
-      return res
-        .status(200)
-        .json({ message: "Complaint SLA breached. Status marked as ELAPSED.", complaint });
+      return res.status(200).json({
+        message: "Complaint SLA breached. Status marked as ELAPSED.",
+        complaint,
+      });
     }
 
     // Completion handling
     if (newStatus === "RESOLVED") {
-      if (now > endTime) {
-        complaint.status = "COMPLETED_LATE";
-      } else {
-        complaint.status = "RESOLVED";
-      }
+      if (now > endTime) complaint.status = "COMPLETED_LATE";
+      else complaint.status = "RESOLVED";
     } else {
       complaint.status = newStatus;
     }
@@ -137,7 +190,9 @@ export const updateComplaintUrgency = async (req, res) => {
     const complaint = await Complaint.findById(complaintId);
     if (!complaint) return res.status(404).json({ message: "Complaint not found" });
 
-    const endTime = new Date(complaint.startTime.getTime() + complaint.durationHours * 60 * 60 * 1000);
+    const endTime = new Date(
+      complaint.startTime.getTime() + complaint.durationHours * 60 * 60 * 1000
+    );
     if (new Date() < endTime) {
       return res.status(400).json({ message: "Cannot update urgency before SLA breach" });
     }
