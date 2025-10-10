@@ -24,10 +24,7 @@ app.use("/uploads", express.static(path.join(path.resolve(), "src/uploads")));
 
 // Routes
 app.use("/api/auth", authRoutes);
-<<<<<<< HEAD
-=======
-app.use("/api/admin", adminRoutes);
->>>>>>> models-update
+
 app.use("/api/user", userRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/manager", managerRoutes);
