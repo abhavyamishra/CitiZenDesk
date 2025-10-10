@@ -1,12 +1,16 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import path from "path";
 import Admin from "./models/admin.model.js";
 
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: path.resolve("../.env") });
 
 const seedAdmin = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log("✅ Connected to DB");
 
     const email = "a@citi.com";
@@ -18,7 +22,6 @@ const seedAdmin = async () => {
     // Create new admin
     const admin = await Admin.create({
       username: "sa",
-      name: "Super Admin",
       email: email.toLowerCase(),
       password: "1234567", // will be hashed automatically
     });

@@ -11,85 +11,65 @@ import bcrypt from "bcryptjs"; // ✅ ensure bcrypt is imported
 // ----------------------------
 export const register = async (req, res) => {
   try {
-    const { role, username, email, phone, password, locality, department } = req.body;
-    const normalizedEmail = email.toLowerCase();
+    const { username, email, phone, password, locality } = req.body;
 
-    // ✅ Ensure required fields exist
-    if (!role || !username || !email || !password) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // Validate required fields
+    if (!username || !email || !phone || !password || !locality) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if already exists
-    const existing = await Auth.findOne({ email: normalizedEmail });
-    if (existing) return res.status(400).json({ message: "Email already exists" });
+    // Check if email or username already exists in User or Auth collection
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) return res.status(400).json({ message: "Username or email already exists" });
 
-    let profile;
+    const existingAuth = await Auth.findOne({ email });
+    if (existingAuth) return res.status(400).json({ message: "Email already exists in Auth" });
 
-    // ✅ Role-based profile creation
-    switch (role) {
-      case "user":
-        if (!phone || !locality)
-          return res.status(400).json({ message: "Phone and locality are required for user" });
-        profile = await User.create({ username, email: normalizedEmail, phone, password, locality });
-        break;
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      case "staff":
-        if (!department)
-          return res.status(400).json({ message: "Department is required for staff" });
-        profile = await Staff.create({ username, email: normalizedEmail, password, department });
-        break;
+    // Create User
+    const newUser = await User.create({ username, email, phone, password: hashedPassword, locality });
 
-      case "manager":
-        if (!department)
-          return res.status(400).json({ message: "Department is required for manager" });
-        profile = await Manager.create({ username, email: normalizedEmail, password, department });
-        break;
-
-      default:
-        return res.status(400).json({ message: "Invalid role" });
-    }
-
-    // ✅ Create Auth record
+    // Create Auth record
     await Auth.create({
-      email: normalizedEmail,
-      password,
-      role,
-      profileId: profile._id,
+      email,
+      password: hashedPassword,
+      role: "user",
+      profileId: newUser._id,
       provider: "local",
     });
 
-    const tokens = await profile.generateAuthTokens();
-    res.status(201).json({ message: `${role} registered successfully`, tokens });
+    // Generate tokens
+    const tokens = await newUser.generateAuthTokens();
+
+    res.status(201).json({ message: "User registered successfully", tokens });
   } catch (error) {
-    console.error("❌ Registration Error:", error);
+    console.error("❌ Register User Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+
 // ----------------------------
-// UNIVERSAL LOGIN (Admin / Others)
+// UNIVERSAL LOGIN (All roles)
 // ----------------------------
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const normalizedEmail = email.toLowerCase();
 
-    // ✅ 1️⃣ Try admin first
-    const admin = await Admin.findOne({ email: normalizedEmail });
-    if (admin) {
-      const isMatch = await admin.matchPassword(password);
-      if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
-
-      const tokens = await admin.generateAuthTokens();
-      return res.json({ message: "Admin login successful", tokens });
-    }
-
-    // ✅ 2️⃣ Check in Auth collection for user, staff, manager
+    // ✅ Check in Auth collection for user, staff, manager, admin
+    console.log("Searching for email:", normalizedEmail);
     const auth = await Auth.findOne({ email: normalizedEmail });
+    console.log("Found auth record:", auth);
     if (!auth) return res.status(400).json({ message: "User not found" });
 
     // use bcrypt here if Auth schema doesn’t have matchPassword()
-    const isMatch = await bcrypt.compare(password, auth.password);
+    console.log("Login password:", password);
+    console.log("Stored hash:", auth.password);
+
+    const isMatch = bcrypt.compare(password, auth.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
     let profile;
@@ -103,6 +83,9 @@ export const login = async (req, res) => {
       case "manager":
         profile = await Manager.findById(auth.profileId);
         break;
+      case "admin":
+        profile = await Admin.findById(auth.profileId);
+        break;
       default:
         return res.status(400).json({ message: "Invalid role" });
     }
@@ -114,6 +97,7 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // ----------------------------
 // LOGOUT

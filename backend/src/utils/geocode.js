@@ -26,4 +26,8 @@ export const geocodeAddress = async (address) => {
     console.error("❌ Error in geocoding:", error.message);
     throw error;
   }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> models-update
