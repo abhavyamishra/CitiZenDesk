@@ -7,6 +7,8 @@ import staffRoutes from "./routes/staffRoutes.js";
 import managerRoutes from "./routes/managerRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 
@@ -20,7 +22,8 @@ app.use(morgan("dev"));
 app.use("/uploads", express.static(path.join(path.resolve(), "src/uploads")));
 
 // Routes
-app.use("/api/auth", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/manager", managerRoutes);
