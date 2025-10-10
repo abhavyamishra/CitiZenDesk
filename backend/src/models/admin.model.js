@@ -23,10 +23,6 @@ const adminSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: 6,
     },
-    accessToken: {
-      token: { type: String },
-      createdAt: { type: Date, default: Date.now },
-    },
     refreshTokens: [
       {
         token: { type: String },
@@ -56,16 +52,16 @@ adminSchema.methods.generateAuthTokens = async function () {
   const accessToken = jwt.sign(
     { id: this._id, role: "admin" },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: process.env.TOKEN_EXPIRY || "1h" }
   );
 
   const refreshToken = jwt.sign(
     { id: this._id, role: "admin" },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "7d" }
   );
 
-  this.accessToken = { token: accessToken, createdAt: new Date() };
+  // Save refresh token in DB
   this.refreshTokens.push({ token: refreshToken, createdAt: new Date() });
   await this.save();
 

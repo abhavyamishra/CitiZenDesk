@@ -45,10 +45,10 @@ const complaintSchema = new mongoose.Schema({
     ref: "Staff", // optional
   },
   status: {
-    type: String,
-    enum: ["active", "being_processed", "completed", "elapsed", "completed_late", "closed"],
-    default: "active",
-  },
+  type: String,
+  enum: ["OPEN", "active", "being_processed", "completed", "elapsed", "completed_late", "closed"],
+  default: "OPEN",
+},
   escalated: {
     type: Boolean,
     default: false,
