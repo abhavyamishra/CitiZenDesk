@@ -1,81 +1,103 @@
 import mongoose from "mongoose";
 import Counter from "./Counter.js";
 
-const complaintSchema = new mongoose.Schema({
-  complaintId: {
-    type: String,
-    unique: true,
-  },
-  locality: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  title: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  author: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Only users can submit complaints
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  media: [
-    { type: String } // URLs or file paths
-  ],
-  deptName: {
-    type: String,
-    required: true,
-    enum: ["road", "water", "garbage"],
-  },
-  startTime: {
-    type: Date,
-    default: Date.now,
-  },
-  durationHours: {
-    type: Number, // auto-set based on dept
-  },
-  assignedStaff: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Staff", // optional
-  },
-  status: {
-  type: String,
-  enum: ["OPEN", "active", "being_processed", "completed", "elapsed", "completed_late", "closed"],
-  default: "OPEN",
-},
-  escalated: {
-    type: Boolean,
-    default: false,
-  },
-  urgency: {
-    type: String,
-    enum: ["low", "medium", "high", "critical"],
-    default: "medium",
-  },
-  feedback: {
-    rating: {
-      type: Number,
-      min: 1,
-      max: 5,
-    },
-    comments: {
+const complaintSchema = new mongoose.Schema(
+  {
+    complaintId: {
       type: String,
+      unique: true,
+    },
+    locality: {
+      type: String,
+      required: true,
       trim: true,
     },
-    submittedAt: {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Only users can submit complaints
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    media: [
+      {
+        type: String, // URLs or file paths
+      },
+    ],
+    deptName: {
+      type: String,
+      required: true,
+      enum: ["road", "water", "garbage"],
+    },
+    startTime: {
       type: Date,
+      default: Date.now,
+    },
+    durationHours: {
+      type: Number, // auto-set based on dept
+    },
+    assignedStaff: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Staff", // optional
+    },
+    status: {
+      type: String,
+      enum: ["OPEN", "being_processed", "completed", "elapsed", "completed_late", "closed"],
+      default: "OPEN",
+    },
+    escalated: {
+      type: Boolean,
+      default: false,
+    },
+    urgency: {
+      type: String,
+      enum: ["low", "medium", "high", "critical"],
+      default: "medium",
+    },
+
+    // ✅ New Geolocation field (for latitude/longitude)
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        default: [0, 0],
+      },
+    },
+
+    feedback: {
+      rating: {
+        type: Number,
+        min: 1,
+        max: 5,
+      },
+      comments: {
+        type: String,
+        trim: true,
+      },
+      submittedAt: {
+        type: Date,
+      },
     },
   },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-// Auto-set durationHours based on dept
-complaintSchema.pre("validate", function(next) {
+// ✅ Add 2dsphere index for geospatial queries
+complaintSchema.index({ location: "2dsphere" });
+
+// Auto-set durationHours based on department
+complaintSchema.pre("validate", function (next) {
   if (this.deptName === "road") this.durationHours = 15;
   else if (this.deptName === "water") this.durationHours = 20;
   else if (this.deptName === "garbage") this.durationHours = 24;
@@ -83,7 +105,7 @@ complaintSchema.pre("validate", function(next) {
 });
 
 // Auto-generate complaintId using atomic counter
-complaintSchema.pre("save", async function(next) {
+complaintSchema.pre("save", async function (next) {
   if (!this.complaintId) {
     const dept = this.deptName.toUpperCase();
     const now = new Date();
@@ -104,11 +126,11 @@ complaintSchema.pre("save", async function(next) {
 });
 
 // Virtuals
-complaintSchema.virtual("endTime").get(function() {
+complaintSchema.virtual("endTime").get(function () {
   return new Date(this.startTime.getTime() + this.durationHours * 60 * 60 * 1000);
 });
 
-complaintSchema.virtual("remainingTime").get(function() {
+complaintSchema.virtual("remainingTime").get(function () {
   const now = new Date();
   const end = new Date(this.startTime.getTime() + this.durationHours * 60 * 60 * 1000);
   return Math.max(0, end - now);

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import path from "path";
+import  authRoutes from "./routes/authRoutes.js"
 import userRoutes from "./routes/userRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
 import managerRoutes from "./routes/managerRoutes.js";
@@ -20,7 +21,7 @@ app.use(morgan("dev"));
 app.use("/uploads", express.static(path.join(path.resolve(), "src/uploads")));
 
 // Routes
-app.use("/api/auth", userRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/manager", managerRoutes);
