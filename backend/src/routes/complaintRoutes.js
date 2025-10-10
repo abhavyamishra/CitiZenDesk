@@ -13,44 +13,32 @@ const router = express.Router();
 // ---------------------------
 // USER ROUTES
 // ---------------------------
-// Create a complaint
-router.post(
-  "/",
-  protect,
-  authorize("user"),
-  createComplaint
-);
 
-// Get all complaints (user can see their own)
-router.get(
-  "/",
-  protect,
-  authorize("user", "staff", "manager"),
-  getComplaints
-);
+// Create a complaint (only users)
+router.post("/", protect, authorize("user"), createComplaint);
+
+// Get all complaints (user sees own, staff sees assigned, manager sees dept)
+router.get("/", protect, authorize("user", "staff", "manager"), getComplaints);
 
 // Get single complaint
-router.get(
-  "/:complaintId",
-  protect,
-  authorize("user", "staff", "manager"),
-  getComplaint
-);
+router.get("/:complaintId", protect, authorize("user", "staff", "manager"), getComplaint);
 
 // ---------------------------
 // STAFF ROUTES
 // ---------------------------
-// Update complaint status (only staff assigned to it)
+
+// Update complaint status (only staff assigned or manager)
 router.put(
   "/:complaintId/status",
   protect,
-  authorize("staff", "manager"), // Manager can also update if needed
+  authorize("staff", "manager"),
   updateComplaintStatus
 );
 
 // ---------------------------
 // MANAGER ROUTES
 // ---------------------------
+
 // Update urgency (only after SLA breach)
 router.put(
   "/:complaintId/urgency",
@@ -60,3 +48,4 @@ router.put(
 );
 
 export default router;
+
