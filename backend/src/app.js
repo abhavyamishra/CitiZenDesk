@@ -6,10 +6,13 @@ import path from "path";
 // Route imports
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
 import managerRoutes from "./routes/managerRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
+
 
 const app = express();
 
@@ -36,6 +39,8 @@ app.use("/uploads", express.static(path.join(path.resolve(), "src/uploads")));
 // 🧭 API Routes
 // ------------------
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/analytics", analyticsRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/manager", managerRoutes);
